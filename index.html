@@ -3,45 +3,117 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Madha Attendance Pro</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>Madha Attendance Pro V2</title>
   <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
-  <header class="topbar"><div><h1>Madha Attendance Pro</h1><p>Madha Arts and Science College</p></div><button id="logoutBtn" class="ghost hidden">Logout</button></header>
-  <main>
-    <section id="home" class="page active hero"><h2>Smart Attendance + Student Management</h2><p>Admin, HOD, Staff, CR, Student portal, hourly subject attendance, timetable, events, PDF/Excel reports with Firebase.</p><div class="grid four"><button onclick="goLogin('admin')">Admin</button><button onclick="goLogin('hod')">HOD</button><button onclick="goLogin('cr')">CR</button><button onclick="show('studentPortal')">Student Portal</button></div></section>
+<header>
+  <h1>Madha Attendance Pro V2</h1>
+  <p>Madha Arts and Science College</p>
+  <button id="installBtn" class="hide">Install App</button>
+</header>
+<main>
+  <section id="loginPage" class="card">
+    <h2>Login</h2>
+    <label>Role</label>
+    <select id="loginRole">
+      <option value="admin">Admin</option>
+      <option value="teacher">Teacher / Subject Staff</option>
+      <option value="cr">Class Representative</option>
+      <option value="hod">HOD</option>
+    </select>
+    <label>Username</label><input id="loginUsername" placeholder="username" />
+    <label>Password</label><input id="loginPassword" type="password" placeholder="password" />
+    <button onclick="login()">Login</button>
+    <p class="note">Default Admin: <b>admin</b> / <b>admin123</b></p>
+    <button class="secondary" onclick="showPage('studentPortal')">Student Attendance Check</button>
+  </section>
 
-    <section id="login" class="page card"><h2>Login</h2><label>Role</label><select id="loginRole"><option value="admin">Admin</option><option value="hod">HOD</option><option value="cr">CR</option></select><label>Username</label><input id="loginUser" placeholder="Username"><label>Password</label><input id="loginPass" type="password" placeholder="Password"><button onclick="login()">Login</button><p class="hint">Default Admin: admin / admin123</p><button class="ghost" onclick="show('home')">Back</button></section>
+  <section id="adminPage" class="hide">
+    <div class="topbar"><h2>Admin Dashboard</h2><button onclick="logout()">Logout</button></div>
+    <div class="grid">
+      <div class="card"><h3>Create User</h3>
+        <select id="newRole"><option value="teacher">Teacher</option><option value="cr">CR</option><option value="hod">HOD</option><option value="admin">Admin</option></select>
+        <input id="newName" placeholder="Name" /><input id="newUsername" placeholder="Username" /><input id="newPassword" placeholder="Password" />
+        <input id="newDepartment" placeholder="Department" /><input id="newYear" placeholder="Year" /><input id="newSubject" placeholder="Subject for staff" />
+        <button onclick="saveUser()">Save User</button>
+      </div>
+      <div class="card"><h3>Add Student</h3>
+        <input id="sName" placeholder="Name" /><input id="sRoll" placeholder="Roll No" />
+        <input id="sDept" placeholder="Department" /><input id="sYear" placeholder="Year" /><input id="sSection" placeholder="Section" />
+        <input id="sPhoto" type="file" accept="image/*" />
+        <input id="sPhone" placeholder="Phone Number" /><input id="sParent" placeholder="Parent Phone Number" />
+        <input id="sEmail" placeholder="Email ID" /><textarea id="sAddress" placeholder="Address"></textarea>
+        <button onclick="saveStudent()">Save Student</button>
+      </div>
+      <div class="card"><h3>Timetable / Department Post</h3>
+        <input id="postDept" placeholder="Department" /><input id="postYear" placeholder="Year" />
+        <textarea id="postText" placeholder="Timetable or department post"></textarea>
+        <button onclick="savePost()">Post to CR Page</button>
+      </div>
+      <div class="card"><h3>College Event Update</h3>
+        <input id="eventTitle" placeholder="Event Title" /><input id="eventDate" type="date" />
+        <textarea id="eventDetails" placeholder="Event details"></textarea>
+        <button onclick="saveEvent()">Upload Event</button>
+      </div>
+    </div>
+    <div class="card"><h3>All Users</h3><div id="usersList"></div></div>
+  </section>
 
-    <section id="dashboard" class="page"><div class="card"><h2 id="dashTitle">Dashboard</h2><div id="adminMenu" class="grid hidden"><button onclick="show('studentPage')">Add Student</button><button onclick="show('userPage')">Create User/Subject Login</button><button onclick="show('timetablePage')">Post Timetable</button><button onclick="show('eventPage')">College Event Update</button><button onclick="show('reportsPage');loadReports()">Reports</button></div><div id="hodMenu" class="grid hidden"><button onclick="show('studentsView');loadStudentsView()">Department Students</button><button onclick="show('reportsPage');loadReports()">Weekly/Monthly Reports</button><button onclick="show('timetablePage')">Post Timetable</button><button onclick="show('eventPage')">Upload Events</button></div><div id="crMenu" class="grid hidden"><button onclick="show('studentsView');loadStudentsView()">View Student Details</button><button onclick="show('crAttendanceView');loadCrAttendance()">Subject Attendance Status</button><button onclick="show('timetableView');loadTimetable()">View Timetable</button><button onclick="show('eventsView');loadEvents()">View Events</button></div><button class="ghost" onclick="show('home')">Home</button></div></section>
+  <section id="teacherPage" class="hide">
+    <div class="topbar"><h2>Teacher Attendance</h2><button onclick="logout()">Logout</button></div>
+    <div class="card">
+      <p id="teacherInfo"></p>
+      <input id="attDept" placeholder="Department" /><input id="attYear" placeholder="Year" />
+      <input id="attSubject" placeholder="Subject" /><input id="attDate" type="date" />
+      <select id="attHour"><option>9-10</option><option>10-11</option><option>11-12</option><option>12-1</option><option>2-3</option><option>3-4</option></select>
+      <button onclick="loadStudentsForAttendance()">Load Students</button>
+      <div id="attendanceList"></div>
+      <button onclick="saveAttendance()">Save Attendance</button>
+    </div>
+  </section>
 
-    <section id="studentPage" class="page card wide"><h2>Student Details Store</h2><div class="formgrid"><input id="sName" placeholder="Student Name"><input id="sRoll" placeholder="Roll No / Reg No"><select id="sDept"><option>B.Sc Computer Science</option><option>BCA</option><option>B.Com</option><option>BBA</option></select><select id="sYear"><option>1st Year</option><option>2nd Year</option><option>3rd Year</option></select><input id="sProfile" type="file" accept="image/*"><input id="sPhone" placeholder="Phone Number"><input id="sParent" placeholder="Parents Phone Number"><input id="sEmail" placeholder="Email ID"><textarea id="sAddress" placeholder="Address"></textarea></div><button onclick="saveStudent()">Save Student to Firebase</button><button class="ghost" onclick="showDashboard()">Back</button></section>
+  <section id="crPage" class="hide">
+    <div class="topbar"><h2>CR Dashboard</h2><button onclick="logout()">Logout</button></div>
+    <div class="card">
+      <input id="crDept" placeholder="Department" /><input id="crYear" placeholder="Year" />
+      <button onclick="crLoad()">View Details</button>
+      <h3>Timetable / Posts</h3><div id="crPosts"></div>
+      <h3>Students</h3><div id="crStudents"></div>
+      <h3>Subject Attendance Status</h3><div id="crAttendance"></div>
+      <p class="note">CR can view and check attendance. Attendance marking rights disabled.</p>
+    </div>
+  </section>
 
-    <section id="userPage" class="page card wide"><h2>Admin: Create Username & Password</h2><p class="hint">Teacher/Staff, CR, HOD, Admin and every subject attendance login save pannalam.</p><div class="formgrid"><select id="uRole"><option value="staff">Subject Staff</option><option value="cr">CR</option><option value="hod">HOD</option><option value="admin">Admin</option></select><input id="uName" placeholder="Name"><input id="uUsername" placeholder="Username"><input id="uPassword" placeholder="Password"><input id="uSubject" placeholder="Subject Name, ex: Java"><select id="uDept"><option>B.Sc Computer Science</option><option>BCA</option><option>B.Com</option><option>BBA</option></select><select id="uYear"><option>1st Year</option><option>2nd Year</option><option>3rd Year</option></select></div><button onclick="saveUser()">Save Login</button><button class="ghost" onclick="showDashboard()">Back</button></section>
+  <section id="hodPage" class="hide">
+    <div class="topbar"><h2>HOD Dashboard</h2><button onclick="logout()">Logout</button></div>
+    <div class="card">
+      <input id="hodDept" placeholder="Department" /><input id="hodYear" placeholder="Year" />
+      <button onclick="hodLoad()">Load Reports</button>
+      <button onclick="downloadPDF()">Download PDF</button>
+      <button onclick="downloadExcel()">Download Excel</button>
+      <div id="hodReport"></div>
+    </div>
+    <div class="card"><h3>Upload Department Notice / Event</h3>
+      <textarea id="hodNotice" placeholder="Notice details"></textarea><button onclick="saveHodNotice()">Upload</button>
+    </div>
+  </section>
 
-    <section id="attendanceGate" class="page card"><h2>Subject Staff Attendance Login</h2><p class="hint">Separate subject username/password correct ah potta mattum attendance open agum.</p><input id="gateSubject" placeholder="Subject Name"><input id="gateUser" placeholder="Staff Username"><input id="gatePass" type="password" placeholder="Staff Password"><button onclick="openAttendance()">Open Attendance</button><button class="ghost" onclick="showDashboard()">Back</button></section>
-
-    <section id="attendancePage" class="page card wide"><h2>Hourly Subject Attendance</h2><div class="formgrid"><select id="aDept"><option>B.Sc Computer Science</option><option>BCA</option><option>B.Com</option><option>BBA</option></select><select id="aYear"><option>1st Year</option><option>2nd Year</option><option>3rd Year</option></select><select id="aSlot"><option>9-10</option><option>10-11</option><option>11-12</option><option>12-1</option><option>2-3</option><option>3-4</option></select><input id="aDate" type="date"></div><button onclick="loadAttendanceStudents()">Load Students</button><div id="attendanceList"></div><button onclick="saveAttendance()">Save Attendance</button><button class="ghost" onclick="showDashboard()">Back</button></section>
-
-    <section id="studentsView" class="page card wide"><h2>Student Details View</h2><div class="formgrid"><select id="vDept"><option>B.Sc Computer Science</option><option>BCA</option><option>B.Com</option><option>BBA</option></select><select id="vYear"><option>1st Year</option><option>2nd Year</option><option>3rd Year</option></select></div><button onclick="loadStudentsView()">Filter</button><div id="studentsTable"></div><button class="ghost" onclick="showDashboard()">Back</button></section>
-
-    <section id="crAttendanceView" class="page card wide"><h2>CR: Subject Wise Attendance Posted Status</h2><p class="hint">CR attendance poda rights illa. Posted / not posted status and details change request note mattum paakalam.</p><div class="formgrid"><select id="cDept"><option>B.Sc Computer Science</option><option>BCA</option><option>B.Com</option><option>BBA</option></select><select id="cYear"><option>1st Year</option><option>2nd Year</option><option>3rd Year</option></select><input id="cDate" type="date"></div><button onclick="loadCrAttendance()">Check</button><div id="crAttendanceTable"></div><button class="ghost" onclick="showDashboard()">Back</button></section>
-
-    <section id="timetablePage" class="page card wide"><h2>HOD/Admin: Post Department Timetable</h2><div class="formgrid"><select id="ttDept"><option>B.Sc Computer Science</option><option>BCA</option><option>B.Com</option><option>BBA</option></select><select id="ttYear"><option>1st Year</option><option>2nd Year</option><option>3rd Year</option></select><textarea id="ttText" placeholder="Monday: 9-10 Java, 10-11 Python..."></textarea></div><button onclick="saveTimetable()">Post Timetable</button><button class="ghost" onclick="showDashboard()">Back</button></section>
-
-    <section id="timetableView" class="page card wide"><h2>CR Timetable View</h2><div id="timetableResult"></div><button class="ghost" onclick="showDashboard()">Back</button></section>
-
-    <section id="eventPage" class="page card wide"><h2>College Event Update</h2><div class="formgrid"><input id="eTitle" placeholder="Event Title"><input id="eDate" type="date"><textarea id="eDetails" placeholder="Event Details"></textarea></div><button onclick="saveEvent()">Upload Event</button><button class="ghost" onclick="showDashboard()">Back</button></section>
-
-    <section id="eventsView" class="page card wide"><h2>College Events</h2><div id="eventsResult"></div><button class="ghost" onclick="showDashboard()">Back</button></section>
-
-    <section id="studentPortal" class="page card wide"><h2>Student Attendance Portal</h2><p class="hint">Username/password vendam. Roll number type panni attendance paakalam.</p><div class="formgrid"><input id="pRoll" placeholder="Enter Roll No"><select id="pDept"><option>B.Sc Computer Science</option><option>BCA</option><option>B.Com</option><option>BBA</option></select><select id="pYear"><option>1st Year</option><option>2nd Year</option><option>3rd Year</option></select></div><button onclick="checkStudentAttendance()">Check Attendance</button><div id="portalResult"></div><button class="ghost" onclick="show('home')">Back</button></section>
-
-    <section id="reportsPage" class="page card wide"><h2>HOD/Admin Reports</h2><div class="formgrid"><select id="rDept"><option>B.Sc Computer Science</option><option>BCA</option><option>B.Com</option><option>BBA</option></select><select id="rYear"><option>1st Year</option><option>2nd Year</option><option>3rd Year</option></select><input id="rSubject" placeholder="Subject optional"><select id="rType"><option value="weekly">Weekly Percentage</option><option value="monthly">Monthly Percentage</option></select></div><button onclick="loadReports()">Load</button><button onclick="downloadPDF()">PDF Download</button><button onclick="downloadExcel()">Excel Download</button><div id="reportTable"></div><button class="ghost" onclick="showDashboard()">Back</button></section>
-  </main>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-  <script type="module" src="firebase.js"></script><script type="module" src="app.js"></script>
+  <section id="studentPortal" class="hide card">
+    <h2>Student Attendance Check</h2>
+    <input id="checkRoll" placeholder="Type Roll Number" />
+    <input id="checkDept" placeholder="Department" />
+    <input id="checkYear" placeholder="Year" />
+    <button onclick="studentCheck()">Check Attendance</button>
+    <button class="secondary" onclick="showPage('loginPage')">Back</button>
+    <div id="studentResult"></div>
+  </section>
+</main>
+<script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-storage-compat.js"></script>
+<script src="js/firebase.js"></script>
+<script src="js/app.js"></script>
 </body>
 </html>
