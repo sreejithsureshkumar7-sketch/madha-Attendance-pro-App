@@ -9,7 +9,7 @@ const firebaseConfig = {
 };
 let db=null, storage=null, firebaseReady=false;
 try{
-  if(firebaseConfig.apiKey !== "PASTE_API_KEY"){
+  if(firebaseConfig.apiKey !=="AIzaSyBmhXcEdUnYAwrOJ3bO1sNwjWL23k9xkTY"){
     firebase.initializeApp(firebaseConfig);
     db=firebase.firestore();
     storage=firebase.storage();
